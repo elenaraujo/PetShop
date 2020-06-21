@@ -15,5 +15,4 @@ public class Service implements Comparator<Product> {
         }
         return 0;
     }
-
 }

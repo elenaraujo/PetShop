@@ -50,7 +50,7 @@ public class Product implements Comparable<Product> {
         this.valor = valor;
     }
 
-    public String getDataCadastro() {
+    public String getDataAlteracao() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
         String dataFormatada = formatter.format(dataAlteracao);
         return dataFormatada;
@@ -68,7 +68,7 @@ public class Product implements Comparable<Product> {
     @Override
     public String toString() {
         return "\nProduto: " + getNome() + "\nCodigo: " + getCodigo() + "\nQuantidade: "
-                + "\nValor" + getValor() + "\nData de cadastro: " + getDataCadastro();
+                + "\nValor" + getValor() + "\nData de cadastro: " + getDataAlteracao();
     }
 
     @Override
