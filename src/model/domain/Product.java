@@ -1,28 +1,36 @@
 package model.domain;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Product implements Comparable<Product> {
 
-    private int codigo;
+    private Integer codigo;
     private String nome;
-    private int quantidade;
-    private double valor;
-    private LocalDate dataCadastro;
-
-    public Product(int codigo, String nome, int quantidade, double valor, LocalDate dataCadastro) {
-        this.codigo = codigo;
-        this.nome = nome;
-        this.quantidade = quantidade;
-        this.valor = valor;
-        this.dataCadastro = dataCadastro;
+    private Double valor;
+    private LocalDate dataAlteracao;
+    
+    public Product(){
     }
 
-    public int getCodigo() {
+    public Product(Integer codigo, String nome, Double valor) {
+        this.codigo = codigo;
+        this.nome = nome;
+        this.valor = valor;
+        this.dataAlteracao = LocalDate.now();
+    }
+    
+    private void formataData(LocalDate ld){
+        LocalDate dt = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+    }
+
+    public Integer getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(Integer codigo) {
         this.codigo = codigo;
     }
 
@@ -34,28 +42,22 @@ public class Product implements Comparable<Product> {
         this.nome = nome;
     }
 
-    public int getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public double getValor() {
+    public Double getValor() {
         return valor;
     }
 
-    public void setValor(double valor) {
+    public void setValor(Double valor) {
         this.valor = valor;
     }
 
-    public LocalDate getDataCadastro() {
-        return dataCadastro;
+    public String getDataCadastro() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+        String dataFormatada = formatter.format(dataAlteracao);
+        return dataFormatada;
     }
 
-    public void setDataCadastro(LocalDate dataCadastro) {
-        this.dataCadastro = dataCadastro;
+    public void setDataAlteracao(LocalDate dataAlteracao) {
+        this.dataAlteracao = dataAlteracao;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class Product implements Comparable<Product> {
 
     @Override
     public String toString() {
-        return "\nProduto: " + getNome() + "\nCodigo: " + getCodigo() + "\nQuantidade: " + getQuantidade()
+        return "\nProduto: " + getNome() + "\nCodigo: " + getCodigo() + "\nQuantidade: "
                 + "\nValor" + getValor() + "\nData de cadastro: " + getDataCadastro();
     }
 
@@ -90,7 +92,7 @@ public class Product implements Comparable<Product> {
             return false;
         }
         Product other = (Product) obj;
-        if (codigo != other.codigo) {
+        if (!Objects.equals(codigo, other.codigo)) {
             return false;
         }
         if (nome == null) {
@@ -104,11 +106,10 @@ public class Product implements Comparable<Product> {
     }
 
     public String pesquisa(Product other) {
-        if (equals(valor) == true) {
-            return toString();
-        } else {
+        if (!codigo.equals(other.codigo)) {
             return "Produto não encontrado";
+        } else {
+            return toString();
         }
     }
-
 }
