@@ -1,5 +1,5 @@
-1001,Coleira Tam G,10.00,23/06/2020
-1002,Shampoo Antipulgas,25.00,15/06/2020
-1003,Ração Golden Gatos 10kg,105.50,02/06/2020
-1004,Ração Golden Cães 10kg,120.50,28/05/2020
-1005,Vestido Princesa Cão P,15.00,19/05/2020
+2001,Shampoo Anticarrapatos,40.0,24/06/2020
+1003,Ração Golden Gatos 10kg,105.5,02/06/2020
+2000,Ração Golden Cães 12kg,80.0,24/06/2020
+2002,Vestido Princesa Gato PP,8.0,24/06/2020
+3001,Vermífugo Cão Filhote,20.0,24/06/2020

@@ -1,15 +1,15 @@
 package view;
 
 import control.Service;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.io.IOException;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import model.domain.Product;
 
 public class Window extends javax.swing.JFrame {
 
-    //ArrayList<Product> listaProd;
     Service s = new Service();
     TreeMap<Integer, Product> treemap;
     String acao = "novo";
@@ -18,31 +18,33 @@ public class Window extends javax.swing.JFrame {
     public Window() {
         initComponents();
         setLocationRelativeTo(null);
-        //listaProd = treeMapToArrayList(treemap = s.getData());
-        treemap = s.getData();
+        treemap = s.obterDadosTxt();
         loadTable();
         manipulaInterface(true, true, false, false);
-    }
-
-    private ArrayList treeMapToArrayList(TreeMap t) {
-        ArrayList arr = new ArrayList();
-        for (int i = 0; i < t.size(); i++) {
-            arr.add(t.get(i));
-        }
-        return arr;
     }
 
     public void loadTable() {
 
         DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Código", "Nome", "Valor", "Data"}, 0);
+        int contador = 0;
 
-        for (int i = 0; i < treemap.size(); i++) {
-            modelo.addRow(new Object[]{
-                treemap.get(i).getCodigo(),
-                treemap.get(i).getNome(),
-                treemap.get(i).getValor(),
-                treemap.get(i).getDataAlteracao()
-            });
+        if (treemap.isEmpty() == false) {
+            if (treemap.size() >= treemap.lastKey()) {
+                contador = treemap.size();
+            } else {
+                contador = treemap.lastKey();
+            }
+
+            for (int i = 0; i <= contador; i++) {
+                if (treemap.containsKey(i)) {
+                    modelo.addRow(new Object[]{
+                        treemap.get(i).getCodigo(),
+                        treemap.get(i).getNome(),
+                        treemap.get(i).getValor(),
+                        treemap.get(i).getDataAlteracao()
+                    });
+                }
+            }
         }
 
         tbl_produtos.setModel(modelo);
@@ -105,8 +107,8 @@ public class Window extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gerenciador de Produtos");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
             }
         });
 
@@ -378,31 +380,48 @@ public class Window extends javax.swing.JFrame {
         Double valor = Double.parseDouble(c_valor.getText());
 
         Product p = new Product(cod, nome, valor);
+        int contador = 0;
 
         if (acao.equals("Editar")) {
-            for (int i = 0; i < treemap.size(); i++) {
-                if ((treemap.get(i).getCodigo().equals(codigoAntigo))) {
-                    treemap.remove(i);
+            
+            if (treemap.size() >= treemap.lastKey()) {
+                contador = treemap.size();
+            } else {
+                contador = treemap.lastKey();
+            }
+            
+            for (int i = 0; i <= contador; i++) {
+                if (treemap.containsKey(i)) {
+                    if ((treemap.get(i).getCodigo().equals(codigoAntigo))) {
+                        treemap.remove(i);
+                        if (treemap.isEmpty()) {
+                            treemap.put(0, p);
+                        } else {
+                            treemap.put(i, p);
+                        }
+                        break;
+                    }
                 }
+            }
+        } else {
+            if (treemap.isEmpty()) {
+                treemap.put(0, p);
+            } else {
+                treemap.put(treemap.lastKey() + 1, p);
             }
         }
 
-        if (treemap.isEmpty()) {
-            treemap.put(0, p);
-        } else {
-            treemap.put(treemap.lastKey() + 1, p);
-        }
         loadTable();
         manipulaInterface(true, true, false, false);
     }//GEN-LAST:event_btn_salvarActionPerformed
 
     private void tbl_produtosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_produtosMouseClicked
+
         int index = tbl_produtos.getSelectedRow();
-        if (index >= 0 && index < treemap.size()) {
-            Product p = treemap.get(index);
-            c_codigo.setText(String.valueOf(p.getCodigo()));
-            c_nome.setText(p.getNome());
-            c_valor.setText(String.valueOf(p.getValor()));
+        if (index >= 0 && index < tbl_produtos.getRowCount()) {
+            c_codigo.setText(tbl_produtos.getModel().getValueAt(index, 0).toString());
+            c_nome.setText(tbl_produtos.getModel().getValueAt(index, 1).toString());
+            c_valor.setText(tbl_produtos.getModel().getValueAt(index, 2).toString());
             manipulaInterface(false, true, false, true);
         }
     }//GEN-LAST:event_tbl_produtosMouseClicked
@@ -410,9 +429,13 @@ public class Window extends javax.swing.JFrame {
     private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
 
         Integer cod = Integer.parseInt(c_codigo.getText());
+
         for (int i = 0; i < treemap.size(); i++) {
-            if ((treemap.get(i).getCodigo().equals(cod))) {
-                treemap.remove(i);
+            if (treemap.containsKey(i)) {
+                if ((treemap.get(i).getCodigo().equals(cod))) {
+                    treemap.remove(i);
+                    break;
+                }
             }
         }
         loadTable();
@@ -427,9 +450,13 @@ public class Window extends javax.swing.JFrame {
 
     }//GEN-LAST:event_cb_buscaActionPerformed
 
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        
-    }//GEN-LAST:event_formWindowClosed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            s.gravarDadosTxt(treemap);
+        } catch (IOException ex) {
+            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     public static void main(String args[]) {
         try {
