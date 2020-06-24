@@ -20,11 +20,6 @@ public class Product implements Comparable<Product> {
         this.valor = valor;
         this.dataAlteracao = LocalDate.now();
     }
-    
-    private void formataData(LocalDate ld){
-        LocalDate dt = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-    }
 
     public Integer getCodigo() {
         return codigo;

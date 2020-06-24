@@ -1,31 +1,37 @@
 package view;
 
-import java.util.ArrayList;
+import control.Service;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 import model.domain.Product;
 
 public class Window extends javax.swing.JFrame {
 
-    ArrayList<Product> listaProd;
+//    ArrayList<Product> listaProd;
+    Service s = new Service();
+    Map<Integer, Product> treemap;
     String acao = "novo";
 
     public Window() {
         initComponents();
         setLocationRelativeTo(null);
-        listaProd = new ArrayList();
+        //listaProd = new ArrayList();
+        treemap = s.getData();
+        LoadTable();
         manipulaInterface(true, true, false, false);
     }
 
-    public void LoadTable() {
+    public final void LoadTable() {
 
         DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Código", "Nome", "Valor", "Data"}, 0);
 
-        for (int i = 0; i < listaProd.size(); i++) {
+        for (int i = 0; i < treemap.size(); i++) {
             modelo.addRow(new Object[]{
-                listaProd.get(i).getCodigo(),
-                listaProd.get(i).getNome(),
-                listaProd.get(i).getValor(),
-                listaProd.get(i).getDataAlteracao()
+                //ainda em construção
+                treemap.values(),
+                treemap.get(i).getNome(),
+                treemap.get(i).getValor(),
+                treemap.get(i).getDataAlteracao()
             });
         }
 
@@ -356,12 +362,12 @@ public class Window extends javax.swing.JFrame {
 
         if (acao.equals("Novo")) {
             Product p = new Product(cod, c_nome.getText(), valor);
-            listaProd.add(p);
+            treemap.put(p.getCodigo(), p);
         } else if (acao.equals("Editar")) {
             int index = tbl_produtos.getSelectedRow();
-            listaProd.get(index).setCodigo(cod);
-            listaProd.get(index).setNome(c_nome.getText());
-            listaProd.get(index).setValor(valor);
+            treemap.get(index).setCodigo(cod);
+            treemap.get(index).setNome(c_nome.getText());
+            treemap.get(index).setValor(valor);
         }
 
         LoadTable();
@@ -371,8 +377,8 @@ public class Window extends javax.swing.JFrame {
 
     private void tbl_produtosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_produtosMouseClicked
         int index = tbl_produtos.getSelectedRow();
-        if (index >= 0 && index < listaProd.size()) {
-            Product p = listaProd.get(index);
+        if (index >= 0 && index < treemap.size()) {
+            Product p = treemap.get(index);
             c_codigo.setText(String.valueOf(p.getCodigo()));
             c_nome.setText(p.getNome());
             c_valor.setText(String.valueOf(p.getValor()));
@@ -382,8 +388,8 @@ public class Window extends javax.swing.JFrame {
 
     private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
         int index = tbl_produtos.getSelectedRow();
-        if (index >= 0 && index < listaProd.size()) {
-            listaProd.remove(index);
+        if (index >= 0 && index < treemap.size()) {
+            treemap.remove(index);
         }
         LoadTable();
         manipulaInterface(true, true, false, true);
