@@ -1,34 +1,44 @@
 package view;
 
 import control.Service;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.TreeMap;
 import javax.swing.table.DefaultTableModel;
 import model.domain.Product;
 
 public class Window extends javax.swing.JFrame {
 
-//    ArrayList<Product> listaProd;
+    //ArrayList<Product> listaProd;
     Service s = new Service();
-    Map<Integer, Product> treemap;
+    TreeMap<Integer, Product> treemap;
     String acao = "novo";
+    Integer codigoAntigo;
 
     public Window() {
         initComponents();
         setLocationRelativeTo(null);
-        //listaProd = new ArrayList();
+        //listaProd = treeMapToArrayList(treemap = s.getData());
         treemap = s.getData();
-        LoadTable();
+        loadTable();
         manipulaInterface(true, true, false, false);
     }
 
-    public final void LoadTable() {
+    private ArrayList treeMapToArrayList(TreeMap t) {
+        ArrayList arr = new ArrayList();
+        for (int i = 0; i < t.size(); i++) {
+            arr.add(t.get(i));
+        }
+        return arr;
+    }
+
+    public void loadTable() {
 
         DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Código", "Nome", "Valor", "Data"}, 0);
 
         for (int i = 0; i < treemap.size(); i++) {
             modelo.addRow(new Object[]{
-                //ainda em construção
-                treemap.values(),
+                treemap.get(i).getCodigo(),
                 treemap.get(i).getNome(),
                 treemap.get(i).getValor(),
                 treemap.get(i).getDataAlteracao()
@@ -94,6 +104,11 @@ public class Window extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gerenciador de Produtos");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jTabbedPane2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -339,6 +354,7 @@ public class Window extends javax.swing.JFrame {
 
     private void btn_editarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editarActionPerformed
         acao = "Editar";
+        codigoAntigo = Integer.parseInt(c_codigo.getText());
         manipulaInterface(false, false, true, false);
     }//GEN-LAST:event_btn_editarActionPerformed
 
@@ -357,21 +373,26 @@ public class Window extends javax.swing.JFrame {
 
     private void btn_salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_salvarActionPerformed
 
-        int cod = Integer.parseInt(c_codigo.getText());
-        double valor = Double.parseDouble(c_valor.getText());
+        Integer cod = Integer.parseInt(c_codigo.getText());
+        String nome = c_nome.getText();
+        Double valor = Double.parseDouble(c_valor.getText());
 
-        if (acao.equals("Novo")) {
-            Product p = new Product(cod, c_nome.getText(), valor);
-            treemap.put(p.getCodigo(), p);
-        } else if (acao.equals("Editar")) {
-            int index = tbl_produtos.getSelectedRow();
-            treemap.get(index).setCodigo(cod);
-            treemap.get(index).setNome(c_nome.getText());
-            treemap.get(index).setValor(valor);
+        Product p = new Product(cod, nome, valor);
+
+        if (acao.equals("Editar")) {
+            for (int i = 0; i < treemap.size(); i++) {
+                if ((treemap.get(i).getCodigo().equals(codigoAntigo))) {
+                    treemap.remove(i);
+                }
+            }
         }
 
-        LoadTable();
-
+        if (treemap.isEmpty()) {
+            treemap.put(0, p);
+        } else {
+            treemap.put(treemap.lastKey() + 1, p);
+        }
+        loadTable();
         manipulaInterface(true, true, false, false);
     }//GEN-LAST:event_btn_salvarActionPerformed
 
@@ -387,11 +408,14 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_tbl_produtosMouseClicked
 
     private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
-        int index = tbl_produtos.getSelectedRow();
-        if (index >= 0 && index < treemap.size()) {
-            treemap.remove(index);
+
+        Integer cod = Integer.parseInt(c_codigo.getText());
+        for (int i = 0; i < treemap.size(); i++) {
+            if ((treemap.get(i).getCodigo().equals(cod))) {
+                treemap.remove(i);
+            }
         }
-        LoadTable();
+        loadTable();
         manipulaInterface(true, true, false, true);
     }//GEN-LAST:event_btn_excluirActionPerformed
 
@@ -400,8 +424,12 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_c_buscaActionPerformed
 
     private void cb_buscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_buscaActionPerformed
-        
+
     }//GEN-LAST:event_cb_buscaActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        
+    }//GEN-LAST:event_formWindowClosed
 
     public static void main(String args[]) {
         try {

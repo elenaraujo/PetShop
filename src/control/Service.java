@@ -6,20 +6,19 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.TreeMap;
 
 import model.domain.Product;
 
 public class Service implements Comparator<Product> {
     
-    Map<Integer, Product> treemap = new TreeMap<>();
+    TreeMap<Integer, Product> treemap = new TreeMap<>();
 
-    public Map getData() {
+    public TreeMap getData() {
 
         String data = "data.txt";
-        Product produto = new Product();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        int i = 0;
 
         try {
             try (FileReader file = new FileReader(data)) {
@@ -29,15 +28,16 @@ public class Service implements Comparator<Product> {
                 while (line != null) {
 
                     String[] campos = line.split(",");
-
+                    Product produto = new Product();
                     produto.setCodigo(Integer.parseInt(campos[0]));
                     produto.setNome(campos[1]);
                     produto.setValor(Double.valueOf(campos[2]));
 
                     LocalDate date = LocalDate.parse(campos[3], formatter);
                     produto.setDataAlteracao(date);
-
-                    treemap.put(produto.getCodigo(), produto);
+                    
+                    treemap.put(i, produto);
+                    i++;
 
                     line = br.readLine();
                 }
