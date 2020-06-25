@@ -6,12 +6,14 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import model.domain.Product;
 
 public class Window extends javax.swing.JFrame {
 
     Service s = new Service();
     TreeMap<Integer, Product> treemap;
+    TreeMap<Integer, Product> treemapTemp;
     String acao = "novo";
     Integer codigoAntigo;
 
@@ -19,6 +21,7 @@ public class Window extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         treemap = s.obterDadosTxt();
+        treemapTemp = new TreeMap<>();
         loadTable();
         manipulaInterface(true, true, false, false);
     }
@@ -26,6 +29,7 @@ public class Window extends javax.swing.JFrame {
     public void loadTable() {
 
         DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Código", "Nome", "Valor", "Data"}, 0);
+        tbl_produtos.setRowSorter(new TableRowSorter(modelo));
         int contador = 0;
 
         if (treemap.isEmpty() == false) {
@@ -42,6 +46,38 @@ public class Window extends javax.swing.JFrame {
                         treemap.get(i).getNome(),
                         treemap.get(i).getValor(),
                         treemap.get(i).getDataAlteracao()
+                    });
+                }
+            }
+        }
+
+        tbl_produtos.setModel(modelo);
+        tbl_produtos.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tbl_produtos.getColumnModel().getColumn(1).setPreferredWidth(200);
+        tbl_produtos.getColumnModel().getColumn(2).setPreferredWidth(50);
+        tbl_produtos.getColumnModel().getColumn(3).setPreferredWidth(100);
+    }
+
+    public void filtrarLista() {
+
+        DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Código", "Nome", "Valor", "Data"}, 0);
+        tbl_produtos.setRowSorter(new TableRowSorter(modelo));
+        int contador = 0;
+
+        if (treemapTemp.isEmpty() == false) {
+            if (treemapTemp.size() >= treemapTemp.lastKey()) {
+                contador = treemapTemp.size();
+            } else {
+                contador = treemapTemp.lastKey();
+            }
+
+            for (int i = 0; i <= contador; i++) {
+                if (treemapTemp.containsKey(i)) {
+                    modelo.addRow(new Object[]{
+                        treemapTemp.get(i).getCodigo(),
+                        treemapTemp.get(i).getNome(),
+                        treemapTemp.get(i).getValor(),
+                        treemapTemp.get(i).getDataAlteracao()
                     });
                 }
             }
@@ -103,6 +139,7 @@ public class Window extends javax.swing.JFrame {
         c_busca = new javax.swing.JTextField();
         cb_busca = new javax.swing.JComboBox<>();
         btn_busca = new javax.swing.JButton();
+        btn_clear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gerenciador de Produtos");
@@ -264,22 +301,25 @@ public class Window extends javax.swing.JFrame {
         jLabel4.setText("Buscar produto por:");
 
         c_busca.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        c_busca.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                c_buscaActionPerformed(evt);
-            }
-        });
 
         cb_busca.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         cb_busca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Código", "Nome" }));
-        cb_busca.addActionListener(new java.awt.event.ActionListener() {
+
+        btn_busca.setFont(new java.awt.Font("Tahoma", 0, 1)); // NOI18N
+        btn_busca.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/lupa.png"))); // NOI18N
+        btn_busca.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cb_buscaActionPerformed(evt);
+                btn_buscaActionPerformed(evt);
             }
         });
 
-        btn_busca.setFont(new java.awt.Font("Tahoma", 0, 1)); // NOI18N
-        btn_busca.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/lupa3.png"))); // NOI18N
+        btn_clear.setFont(new java.awt.Font("Tahoma", 0, 1)); // NOI18N
+        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/close.png"))); // NOI18N
+        btn_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_clearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -305,7 +345,9 @@ public class Window extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(c_busca, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_busca, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btn_busca, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -317,7 +359,8 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(cb_busca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btn_clear, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btn_busca, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(c_busca))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -383,13 +426,13 @@ public class Window extends javax.swing.JFrame {
         int contador = 0;
 
         if (acao.equals("Editar")) {
-            
+
             if (treemap.size() >= treemap.lastKey()) {
                 contador = treemap.size();
             } else {
                 contador = treemap.lastKey();
             }
-            
+
             for (int i = 0; i <= contador; i++) {
                 if (treemap.containsKey(i)) {
                     if ((treemap.get(i).getCodigo().equals(codigoAntigo))) {
@@ -442,14 +485,6 @@ public class Window extends javax.swing.JFrame {
         manipulaInterface(true, true, false, true);
     }//GEN-LAST:event_btn_excluirActionPerformed
 
-    private void c_buscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_c_buscaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_c_buscaActionPerformed
-
-    private void cb_buscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_buscaActionPerformed
-
-    }//GEN-LAST:event_cb_buscaActionPerformed
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
             s.gravarDadosTxt(treemap);
@@ -457,6 +492,40 @@ public class Window extends javax.swing.JFrame {
             Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void btn_buscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_buscaActionPerformed
+
+        int n = treemap.size();
+        String busca = c_busca.getText();
+        String filtro = cb_busca.getSelectedItem().toString();
+        String a = "";
+
+        if (filtro.equals("Código")) {
+            for (int i = 0; i <= n; i++) {
+                if (treemap.containsKey(i)) {
+                    a = treemap.get(i).getCodigo().toString();
+                    if (a.startsWith(busca)) {
+                        treemapTemp.put(i, treemap.get(i));
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i <= n; i++) {
+                if (treemap.containsKey(i)) {
+                    a = treemap.get(i).getNome();
+                    if (a.startsWith(busca)) {
+                        treemapTemp.put(i, treemap.get(i));
+                    }
+                }
+            }
+        }
+        filtrarLista();
+    }//GEN-LAST:event_btn_buscaActionPerformed
+
+    private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
+        c_busca.setText("");
+        loadTable();
+    }//GEN-LAST:event_btn_clearActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -486,6 +555,7 @@ public class Window extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_busca;
     private javax.swing.JButton btn_cancelar;
+    private javax.swing.JButton btn_clear;
     private javax.swing.JButton btn_editar;
     private javax.swing.JButton btn_excluir;
     private javax.swing.JButton btn_novo;
