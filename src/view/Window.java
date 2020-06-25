@@ -201,11 +201,6 @@ public class Window extends javax.swing.JFrame {
         jLabel3.setText("Valor: R$");
 
         c_codigo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        c_codigo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                c_codigoActionPerformed(evt);
-            }
-        });
 
         c_nome.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -412,10 +407,6 @@ public class Window extends javax.swing.JFrame {
         manipulaInterface(true, true, false, false);
     }//GEN-LAST:event_btn_cancelarActionPerformed
 
-    private void c_codigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_c_codigoActionPerformed
-
-    }//GEN-LAST:event_c_codigoActionPerformed
-
     private void btn_salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_salvarActionPerformed
 
         Integer cod = Integer.parseInt(c_codigo.getText());
@@ -495,10 +486,11 @@ public class Window extends javax.swing.JFrame {
 
     private void btn_buscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_buscaActionPerformed
 
+        treemapTemp.clear();
         int n = treemap.size();
         String busca = c_busca.getText();
         String filtro = cb_busca.getSelectedItem().toString();
-        String a = "";
+        String a;
 
         if (filtro.equals("Código")) {
             for (int i = 0; i <= n; i++) {

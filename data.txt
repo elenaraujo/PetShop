@@ -1,5 +1,4 @@
-2001,Shampoo Antipulgas,40.0,24/06/2020
-1003,Ração Golden Gatos 10kg,105.5,02/06/2020
+4000,Shampoo Antipulgas,40.0,25/06/2020
+1003,Ração Golden Gatos 12kg,105.5,25/06/2020
 2000,Ração Golden Cães 12kg,120.0,24/06/2020
-2002,Vestido Princesa Gato PP,8.0,24/06/2020
-3001,Vermífugo Cão Filhote,20.0,24/06/2020
+3002,Biscoito Canino,5.0,25/06/2020
