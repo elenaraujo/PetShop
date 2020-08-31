@@ -1,8 +1,8 @@
 # Petshop
 
-**A2 - OOP II / 2020.1
-Universidade Veiga de Almeida
-Information Systems course**
+**A2 - OOP II / 2020.1<br/>
+Universidade Veiga de Almeida<br/>
+Information Systems course<br/>**
 
 A very rudimental CRUD, created as a test for my Object-Oriented Programming course with Java, on college.
 
